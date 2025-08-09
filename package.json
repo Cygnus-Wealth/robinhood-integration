@@ -1,0 +1,58 @@
+{
+  "name": "@cygnus-wealth/robinhood-integration",
+  "version": "0.1.0",
+  "description": "Robinhood API integration library for CygnusWealth - standardized portfolio data extraction",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "test:coverage": "vitest --coverage",
+    "lint": "eslint src --ext .ts",
+    "format": "prettier --write \"src/**/*.ts\"",
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "robinhood",
+    "api",
+    "portfolio",
+    "finance",
+    "crypto",
+    "stocks",
+    "integration"
+  ],
+  "author": "CygnusWealth",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Cygnus-Wealth/robinhood-integration.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Cygnus-Wealth/robinhood-integration/issues"
+  },
+  "homepage": "https://github.com/Cygnus-Wealth/robinhood-integration#readme",
+  "dependencies": {
+    "axios": "^1.7.2",
+    "uuid": "^9.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.9",
+    "@types/uuid": "^9.0.8",
+    "@typescript-eslint/eslint-plugin": "^7.14.1",
+    "@typescript-eslint/parser": "^7.14.1",
+    "eslint": "^8.57.0",
+    "prettier": "^3.3.2",
+    "typescript": "^5.5.2",
+    "vitest": "^1.6.0",
+    "@vitest/ui": "^1.6.0"
+  },
+  "peerDependencies": {
+    "@cygnus-wealth/data-models": "*"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
