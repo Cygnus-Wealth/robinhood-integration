@@ -58,12 +58,15 @@ export class RobinhoodAPI {
   }
 
   async getQuote(symbol: string): Promise<RobinhoodQuote> {
-    return this.client.get<RobinhoodQuote>(ENDPOINTS.INSTRUMENTS.QUOTE(symbol));
+    return this.client.get<RobinhoodQuote>(`/marketdata/quotes/${symbol}/`);
   }
 
   async getQuotes(symbols: string[]): Promise<RobinhoodQuote[]> {
+    if (symbols.length === 0) {
+      return [];
+    }
     const response = await this.client.get<ApiResponse<RobinhoodQuote>>(
-      ENDPOINTS.QUOTES.BY_SYMBOLS(symbols)
+      `/marketdata/quotes/?symbols=${symbols.join(',')}`
     );
     return response.results || [];
   }
@@ -91,10 +94,26 @@ export class RobinhoodAPI {
   async getHistoricals(
     symbol: string,
     interval: string = 'day',
-    span: string = 'week'
+    span: string = 'week',
+    bounds: string = 'regular'
   ): Promise<RobinhoodHistoricals> {
-    const url = `${ENDPOINTS.QUOTES.HISTORICALS(symbol)}?interval=${interval}&span=${span}`;
+    const url = `/marketdata/historicals/${symbol}/?interval=${interval}&span=${span}&bounds=${bounds}`;
     return this.client.get<RobinhoodHistoricals>(url);
+  }
+
+  async getOptionsPositions(): Promise<any[]> {
+    return this.client.paginate('/options/positions/');
+  }
+
+  async getOptionsOrders(): Promise<any[]> {
+    return this.client.paginate('/options/orders/');
+  }
+
+  async searchInstruments(query: string): Promise<RobinhoodInstrument[]> {
+    const response = await this.client.get<ApiResponse<RobinhoodInstrument>>(
+      `/instruments/?query=${query}`
+    );
+    return response.results || [];
   }
 
   async getCryptoHoldings(): Promise<RobinhoodCryptoHolding[]> {
@@ -102,7 +121,7 @@ export class RobinhoodAPI {
   }
 
   async getCryptoQuote(currencyPairId: string): Promise<RobinhoodCryptoQuote> {
-    return this.client.get<RobinhoodCryptoQuote>(ENDPOINTS.CRYPTO.QUOTES(currencyPairId));
+    return this.client.get<RobinhoodCryptoQuote>(`/marketdata/crypto/quotes/${currencyPairId}/`);
   }
 
   async getWatchlists(): Promise<RobinhoodWatchlist[]> {
