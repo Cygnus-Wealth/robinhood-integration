@@ -38,6 +38,8 @@ export const mockAccount = {
   type: 'margin',
   created: '2023-01-01T00:00:00Z',
   updated: '2024-01-01T00:00:00Z',
+  createdAt: '2023-01-01T00:00:00Z',
+  updatedAt: '2024-01-01T00:00:00Z',
   portfolio: 'https://api.robinhood.com/portfolios/TEST123456/',
 };
 
@@ -77,6 +79,7 @@ export const mockInstrument = {
   rhsTradability: 'tradable',
   fractionalTradability: 'tradable',
   defaultCollarFraction: '0.05',
+  marketCap: '3000000000000',
 };
 
 export const mockPosition = {

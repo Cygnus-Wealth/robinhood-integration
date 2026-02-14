@@ -54,7 +54,7 @@ export class RobinhoodClient {
           if (this.authTokens?.refreshToken) {
             try {
               await this.refreshAccessToken();
-              return this.axios(originalRequest);
+              return this.axios.request(originalRequest);
             } catch (refreshError) {
               this.authTokens = undefined;
               throw refreshError;

@@ -20,3 +20,9 @@ yarn-error.log*
 .nuxt/
 .output/
 *.tsbuildinfo
+
+# Gas Town (added by gt)
+.runtime/
+.claude/
+.beads/
+.logs/

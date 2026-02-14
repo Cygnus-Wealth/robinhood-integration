@@ -60,8 +60,26 @@ export class PortfolioMapper {
     const dayChange = equity - previousEquity;
     const dayChangePercent = previousEquity !== 0 ? (dayChange / previousEquity) * 100 : 0;
 
+    const totalPositionValue = positions.reduce((sum, p) => sum + p.marketValue, 0);
+    const stockValue = positions
+      .filter((p) => p.assetType === 'stock' || p.assetType === 'etf')
+      .reduce((sum, p) => sum + p.marketValue, 0);
+    const cryptoValue = positions
+      .filter((p) => p.assetType === 'crypto')
+      .reduce((sum, p) => sum + p.marketValue, 0);
+
+    const stockPercent =
+      totalPositionValue > 0
+        ? (stockValue / totalPositionValue) * 100
+        : positions.length > 0
+          ? 100
+          : 0;
+    const cryptoPercent =
+      totalPositionValue > 0 ? (cryptoValue / totalPositionValue) * 100 : 0;
+
     return {
       id: account.accountNumber,
+      accountId: account.accountNumber,
       accountNumber: account.accountNumber,
       accountType: account.type === 'margin' ? 'margin' : 'cash',
       totalValue,
@@ -72,6 +90,21 @@ export class PortfolioMapper {
       totalGainLoss: 0,
       totalGainLossPercent: 0,
       positions,
+      performance: {
+        totalReturn: 0,
+        totalReturnPercent: 0,
+        dayReturn: dayChange,
+        dayReturnPercent: dayChangePercent,
+      },
+      allocation: {
+        stocks: Math.round(stockPercent),
+        bonds: 0,
+        cash: 0,
+        crypto: Math.round(cryptoPercent),
+        other: 0,
+      },
+      currency: 'USD',
+      lastUpdated: new Date(),
       metadata: {
         source: 'robinhood',
         lastUpdated: new Date(),
@@ -82,16 +115,16 @@ export class PortfolioMapper {
 
   static mapPosition(
     position: RobinhoodPosition,
-    instrument: RobinhoodInstrument,
+    instrument?: RobinhoodInstrument,
     quote?: RobinhoodQuote
   ): StandardizedPosition {
     const quantity = parseFloat(position.quantity || '0');
-    const averageCost = parseFloat(position.averageBuyPrice || '0');
+    const averagePrice = parseFloat(position.averageBuyPrice || '0');
     const currentPrice = parseFloat(quote?.lastTradePrice || '0');
     const marketValue = quantity * currentPrice;
-    const totalCost = quantity * averageCost;
-    const totalGainLoss = marketValue - totalCost;
-    const totalGainLossPercent = totalCost !== 0 ? (totalGainLoss / totalCost) * 100 : 0;
+    const costBasis = quantity * averagePrice;
+    const unrealizedGain = marketValue - costBasis;
+    const unrealizedGainPercent = costBasis !== 0 ? (unrealizedGain / costBasis) * 100 : 0;
 
     const previousClose = parseFloat(quote?.previousClose || '0');
     const dayChange = currentPrice - previousClose;
@@ -99,24 +132,26 @@ export class PortfolioMapper {
 
     return {
       id: position.url,
-      symbol: instrument.symbol,
-      name: instrument.name,
-      type: instrument.type === 'stock' ? 'stock' : 'etf',
+      symbol: instrument?.symbol || 'UNKNOWN',
+      name: instrument?.name || 'Unknown Instrument',
       quantity,
-      averageCost,
+      averagePrice,
       currentPrice,
       marketValue,
+      costBasis,
+      unrealizedGain,
+      unrealizedGainPercent,
+      realizedGain: 0,
       dayChange: dayChange * quantity,
       dayChangePercent,
-      totalGainLoss,
-      totalGainLossPercent,
+      assetType: instrument?.type === 'stock' ? 'stock' : instrument?.type || 'stock',
       currency: 'USD',
-      exchange: instrument.market,
+      exchange: instrument?.market,
+      lastUpdated: new Date(position.updatedAt),
       metadata: {
-        instrumentId: instrument.id,
-        instrumentUrl: instrument.url,
+        instrumentId: instrument?.id,
+        instrumentUrl: instrument?.url,
         positionUrl: position.url,
-        lastUpdated: new Date(position.updatedAt),
       },
     };
   }
@@ -124,13 +159,17 @@ export class PortfolioMapper {
   static mapBalance(account: RobinhoodAccount): StandardizedBalance {
     return {
       accountId: account.accountNumber,
+      totalValue: 0,
       cashBalance: parseFloat(account.cashBalances?.cash || '0'),
+      marginBalance: 0,
       unsettledCash: parseFloat(account.cashBalances?.unsettledFunds || '0'),
+      withdrawableCash: parseFloat(account.cashBalances?.cash || '0'),
       buyingPower: parseFloat(account.buyingPower || '0'),
-      pendingDeposits: parseFloat(account.cashBalances?.unclearedDeposits || '0'),
-      pendingWithdrawals: 0,
+      dayTradeBuyingPower: 0,
+      maintenanceRequirement: 0,
+      marginCallAmount: 0,
       currency: 'USD',
-      lastUpdated: new Date(account.updated),
+      lastUpdated: new Date(),
     };
   }
 
@@ -142,44 +181,76 @@ export class PortfolioMapper {
 
     return {
       symbol: quote.symbol,
-      name: instrument?.name,
+      name: instrument?.name || quote.symbol,
       price,
       previousClose,
+      open: 0,
+      dayHigh: 0,
+      dayLow: 0,
+      volume: 0,
+      marketCap: instrument?.marketCap ? parseFloat(instrument.marketCap) : 0,
+      peRatio: 0,
+      dividendYield: 0,
+      fiftyTwoWeekHigh: 0,
+      fiftyTwoWeekLow: 0,
       change,
       changePercent,
       bid: parseFloat(quote.bidPrice || '0'),
       ask: parseFloat(quote.askPrice || '0'),
       bidSize: quote.bidSize,
       askSize: quote.askSize,
-      lastUpdated: new Date(quote.updatedAt),
-      currency: 'USD',
+      lastTradeTime: new Date(quote.updatedAt),
       exchange: instrument?.market,
-      tradingHalted: quote.tradingHalted,
+      currency: 'USD',
+      isMarketOpen: !quote.tradingHalted,
+      extendedHoursPrice: quote.lastExtendedHoursTradePrice
+        ? parseFloat(quote.lastExtendedHoursTradePrice)
+        : undefined,
+      metadata: {
+        instrumentUrl: quote.instrument,
+        source: quote.lastTradePriceSource,
+      },
     };
   }
 
-  static mapTransaction(order: RobinhoodOrder, instrument?: RobinhoodInstrument): StandardizedTransaction {
+  static mapTransaction(
+    order: RobinhoodOrder,
+    instrument?: RobinhoodInstrument
+  ): StandardizedTransaction {
     const type = order.side === 'buy' ? 'buy' : 'sell';
     const quantity = parseFloat(order.quantity || '0');
     const price = parseFloat(order.averagePrice || order.price || '0');
     const amount = quantity * price;
+    const accountId = order.account?.split('/').slice(-2, -1)[0];
 
     return {
       id: order.id,
+      accountId,
       type,
-      symbol: instrument?.symbol,
-      name: instrument?.name,
+      symbol: instrument?.symbol || (order as any).symbol || 'UNKNOWN',
+      name: instrument?.name || 'Unknown',
       quantity,
       price,
       amount,
-      fee: parseFloat(order.fees || '0'),
-      date: new Date(order.created),
-      status: this.mapOrderStatus(order.state),
+      fees: parseFloat(order.fees || '0'),
       currency: 'USD',
+      status: this.mapOrderStatus(order.state),
+      orderType: order.type,
+      executedAt: (order as any).executedAt ? new Date((order as any).executedAt) : undefined,
+      createdAt: (order as any).createdAt
+        ? new Date((order as any).createdAt)
+        : order.created
+          ? new Date(order.created)
+          : undefined,
+      updatedAt: (order as any).updatedAt
+        ? new Date((order as any).updatedAt)
+        : order.updated
+          ? new Date(order.updated)
+          : undefined,
       metadata: {
         orderId: order.id,
         orderUrl: order.url,
-        source: 'robinhood',
+        instrumentUrl: order.instrument,
       },
     };
   }
@@ -187,11 +258,12 @@ export class PortfolioMapper {
   static mapHistoricalData(historicals: RobinhoodHistoricals): StandardizedHistoricalData {
     const data: HistoricalDataPoint[] = historicals.historicals.map((point) => ({
       timestamp: new Date(point.beginsAt),
-      open: parseFloat(point.openPrice),
-      high: parseFloat(point.highPrice),
-      low: parseFloat(point.lowPrice),
+      open: 0,
+      high: 0,
+      low: 0,
       close: parseFloat(point.closePrice),
       volume: point.volume,
+      adjustedClose: parseFloat(point.closePrice),
     }));
 
     const interval = this.mapInterval(historicals.interval);
@@ -201,10 +273,8 @@ export class PortfolioMapper {
       interval,
       data,
       metadata: {
-        source: 'robinhood',
-        startDate: data.length > 0 ? data[0].timestamp : new Date(),
-        endDate: data.length > 0 ? data[data.length - 1].timestamp : new Date(),
-        currency: 'USD',
+        span: historicals.span,
+        bounds: historicals.bounds,
       },
     };
   }
@@ -214,29 +284,44 @@ export class PortfolioMapper {
       id: watchlist.url,
       name: watchlist.name,
       symbols,
-      createdAt: new Date(watchlist.createdAt),
-      updatedAt: new Date(watchlist.updatedAt),
+      createdAt: watchlist.createdAt ? new Date(watchlist.createdAt) : new Date(),
+      updatedAt: watchlist.updatedAt ? new Date(watchlist.updatedAt) : new Date(),
       metadata: {
-        source: 'robinhood',
         url: watchlist.url,
       },
     };
   }
 
-  static mapDividend(dividend: RobinhoodDividend, instrument?: RobinhoodInstrument): StandardizedDividend {
+  static mapDividend(
+    dividend: RobinhoodDividend,
+    instrument?: RobinhoodInstrument
+  ): StandardizedDividend {
+    const amount = parseFloat(dividend.amount);
+    const taxWithheld = parseFloat(dividend.withholding || '0');
+    const netAmount = amount - taxWithheld;
+    const accountId = dividend.account?.split('/').slice(-2, -1)[0];
+
     return {
       id: dividend.id,
-      symbol: instrument?.symbol || '',
-      amount: parseFloat(dividend.amount),
-      paymentDate: new Date(dividend.payableDate),
-      exDividendDate: new Date(dividend.recordDate),
-      recordDate: new Date(dividend.recordDate),
-      status: dividend.state === 'paid' ? 'paid' : 'pending',
+      accountId,
+      symbol: instrument?.symbol || 'UNKNOWN',
+      name: instrument?.name || 'Unknown',
+      amount,
+      rate: parseFloat(dividend.rate),
+      shares: parseFloat(dividend.position),
+      grossAmount: amount,
+      taxWithheld,
+      netAmount,
       currency: 'USD',
+      status: dividend.state === 'paid' ? 'paid' : 'pending',
+      exDate: new Date(dividend.recordDate),
+      paymentDate: new Date(dividend.payableDate),
+      recordDate: new Date(dividend.recordDate),
+      declaredDate: new Date(dividend.recordDate),
       metadata: {
-        source: 'robinhood',
         dividendId: dividend.id,
-        withholding: parseFloat(dividend.withholding || '0'),
+        dividendUrl: dividend.url,
+        instrumentUrl: dividend.instrument,
       },
     };
   }
@@ -262,7 +347,7 @@ export class PortfolioMapper {
     }
   }
 
-  private static mapInterval(interval: string): StandardizedHistoricalData['interval'] {
+  private static mapInterval(interval: string): string {
     switch (interval) {
       case '5minute':
       case '10minute':

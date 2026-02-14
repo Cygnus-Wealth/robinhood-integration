@@ -18,6 +18,7 @@ describe('RobinhoodClient', () => {
       post: vi.fn(),
       put: vi.fn(),
       delete: vi.fn(),
+      request: vi.fn(),
       interceptors: {
         request: {
           use: vi.fn(),
@@ -285,8 +286,7 @@ describe('RobinhoodClient', () => {
 
         // Mock retry success
         const retryResponse = { data: 'retry-success' };
-        // mockAxiosInstance is a function that should be called by the interceptor
-        (mockAxiosInstance as any) = vi.fn().mockResolvedValueOnce(retryResponse);
+        mockAxiosInstance.request.mockResolvedValueOnce(retryResponse);
 
         const error = {
           response: { status: 401 },
