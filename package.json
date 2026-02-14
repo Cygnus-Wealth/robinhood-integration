@@ -32,7 +32,6 @@
   },
   "publishConfig": {
     "access": "public",
-    "provenance": true
   },
   "bugs": {
     "url": "https://github.com/Cygnus-Wealth/robinhood-integration/issues"
