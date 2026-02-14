@@ -31,7 +31,7 @@
     "url": "git+https://github.com/Cygnus-Wealth/robinhood-integration.git"
   },
   "publishConfig": {
-    "access": "public",
+    "access": "public"
   },
   "bugs": {
     "url": "https://github.com/Cygnus-Wealth/robinhood-integration/issues"
