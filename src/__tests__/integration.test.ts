@@ -60,10 +60,10 @@ describe('Robinhood Integration - End to End', () => {
   });
 
   describe('Type Exports', () => {
-    it('should export all necessary types', () => {
+    it('should export all necessary types', async () => {
       // This test verifies that the main index file exports everything needed
-      const exports = require('../index');
-      
+      const exports = await import('../index');
+
       expect(exports.RobinhoodService).toBeDefined();
       expect(exports.RobinhoodClient).toBeDefined();
       expect(exports.RobinhoodAPI).toBeDefined();

@@ -90,6 +90,7 @@ export interface RobinhoodInstrument {
   rhsTradability: string;
   fractionalTradability: string;
   defaultCollarFraction: string;
+  marketCap?: string;
 }
 
 export interface RobinhoodQuote {

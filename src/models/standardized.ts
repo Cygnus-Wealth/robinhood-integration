@@ -1,5 +1,6 @@
 export interface StandardizedPortfolio {
   id: string;
+  accountId: string;
   accountNumber: string;
   accountType: 'cash' | 'margin' | 'crypto';
   totalValue: number;
@@ -10,6 +11,21 @@ export interface StandardizedPortfolio {
   totalGainLoss: number;
   totalGainLossPercent: number;
   positions: StandardizedPosition[];
+  performance: {
+    totalReturn: number;
+    totalReturnPercent: number;
+    dayReturn: number;
+    dayReturnPercent: number;
+  };
+  allocation: {
+    stocks: number;
+    bonds: number;
+    cash: number;
+    crypto: number;
+    other: number;
+  };
+  currency: string;
+  lastUpdated: Date;
   metadata: {
     source: 'robinhood';
     lastUpdated: Date;
@@ -21,55 +37,61 @@ export interface StandardizedPosition {
   id: string;
   symbol: string;
   name: string;
-  type: 'stock' | 'crypto' | 'option' | 'etf';
   quantity: number;
-  averageCost: number;
+  averagePrice: number;
   currentPrice: number;
   marketValue: number;
+  costBasis: number;
+  unrealizedGain: number;
+  unrealizedGainPercent: number;
+  realizedGain: number;
   dayChange: number;
   dayChangePercent: number;
-  totalGainLoss: number;
-  totalGainLossPercent: number;
+  assetType: string;
   currency: string;
   exchange?: string;
-  assetClass?: string;
+  lastUpdated: Date;
   metadata: {
     instrumentId?: string;
     instrumentUrl?: string;
     positionUrl?: string;
-    lastUpdated: Date;
   };
 }
 
 export interface StandardizedTransaction {
   id: string;
+  accountId?: string;
   type: 'buy' | 'sell' | 'dividend' | 'interest' | 'deposit' | 'withdrawal' | 'fee';
   symbol?: string;
   name?: string;
   quantity?: number;
   price?: number;
   amount: number;
-  fee?: number;
-  date: Date;
-  status: 'pending' | 'completed' | 'cancelled' | 'failed';
+  fees?: number;
   currency: string;
+  status: 'pending' | 'completed' | 'cancelled' | 'failed';
+  orderType?: string;
+  executedAt?: Date;
+  createdAt?: Date;
+  updatedAt?: Date;
   metadata: {
     orderId?: string;
     orderUrl?: string;
-    executionId?: string;
-    source: 'robinhood';
+    instrumentUrl?: string;
   };
 }
 
 export interface StandardizedBalance {
   accountId: string;
+  totalValue: number;
   cashBalance: number;
+  marginBalance: number;
   unsettledCash: number;
+  withdrawableCash: number;
   buyingPower: number;
-  marginBalance?: number;
-  shortBalance?: number;
-  pendingDeposits: number;
-  pendingWithdrawals: number;
+  dayTradeBuyingPower: number;
+  maintenanceRequirement: number;
+  marginCallAmount: number;
   currency: string;
   lastUpdated: Date;
 }
@@ -86,29 +108,32 @@ export interface StandardizedQuote {
   marketCap?: number;
   peRatio?: number;
   dividendYield?: number;
-  week52High?: number;
-  week52Low?: number;
+  fiftyTwoWeekHigh?: number;
+  fiftyTwoWeekLow?: number;
   change: number;
   changePercent: number;
   bid?: number;
   ask?: number;
   bidSize?: number;
   askSize?: number;
-  lastUpdated: Date;
-  currency: string;
+  lastTradeTime: Date;
   exchange?: string;
-  tradingHalted?: boolean;
+  currency: string;
+  isMarketOpen?: boolean;
+  extendedHoursPrice?: number;
+  metadata?: {
+    instrumentUrl?: string;
+    source?: string;
+  };
 }
 
 export interface StandardizedHistoricalData {
   symbol: string;
-  interval: 'minute' | 'hour' | 'day' | 'week' | 'month';
+  interval: string;
   data: HistoricalDataPoint[];
   metadata: {
-    source: 'robinhood';
-    startDate: Date;
-    endDate: Date;
-    currency: string;
+    span?: string;
+    bounds?: string;
   };
 }
 
@@ -119,6 +144,7 @@ export interface HistoricalDataPoint {
   low: number;
   close: number;
   volume: number;
+  adjustedClose?: number;
 }
 
 export interface StandardizedWatchlist {
@@ -128,25 +154,31 @@ export interface StandardizedWatchlist {
   createdAt: Date;
   updatedAt: Date;
   metadata: {
-    source: 'robinhood';
     url?: string;
   };
 }
 
 export interface StandardizedDividend {
   id: string;
+  accountId?: string;
   symbol: string;
+  name?: string;
   amount: number;
-  paymentDate: Date;
-  exDividendDate: Date;
-  recordDate: Date;
-  frequency?: 'quarterly' | 'monthly' | 'annual' | 'semi-annual';
-  status: 'pending' | 'paid' | 'cancelled';
+  rate?: number;
+  shares?: number;
+  grossAmount?: number;
+  taxWithheld?: number;
+  netAmount?: number;
   currency: string;
+  status: 'pending' | 'paid' | 'cancelled';
+  exDate?: Date;
+  paymentDate: Date;
+  recordDate: Date;
+  declaredDate?: Date;
   metadata: {
-    source: 'robinhood';
     dividendId?: string;
-    withholding?: number;
+    dividendUrl?: string;
+    instrumentUrl?: string;
   };
 }
 

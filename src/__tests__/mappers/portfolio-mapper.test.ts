@@ -107,7 +107,7 @@ describe('PortfolioMapper', () => {
     it('should handle missing portfolio values', () => {
       const emptyPortfolio = {
         ...mockPortfolio,
-        marketValue: null,
+        market_value: null,
         equity: null,
         lastCoreEquity: null,
       };
