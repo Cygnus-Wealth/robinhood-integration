@@ -1,0 +1,417 @@
+{
+  "auth": {
+    "login": {
+      "url": "/api-token-auth/",
+      "method": "POST",
+      "status": 200,
+      "response": {
+        "accessToken": "rec-access-token-abc123",
+        "refreshToken": "rec-refresh-token-xyz789",
+        "expiresIn": 86400,
+        "tokenType": "Bearer",
+        "scope": "internal"
+      }
+    },
+    "loginFailure": {
+      "url": "/api-token-auth/",
+      "method": "POST",
+      "status": 401,
+      "response": {
+        "detail": "Unable to log in with provided credentials."
+      }
+    },
+    "loginMfaRequired": {
+      "url": "/api-token-auth/",
+      "method": "POST",
+      "status": 400,
+      "response": {
+        "mfa_required": true,
+        "mfa_type": "sms"
+      }
+    }
+  },
+  "accounts": {
+    "list": {
+      "url": "/accounts/",
+      "method": "GET",
+      "status": 200,
+      "response": {
+        "results": [
+          {
+            "accountNumber": "REC-ACCT-001",
+            "url": "https://api.robinhood.com/accounts/REC-ACCT-001/",
+            "buyingPower": "25432.18",
+            "portfolioCash": "12500.00",
+            "canDowngrade": false,
+            "userType": "margin",
+            "user": "https://api.robinhood.com/user/",
+            "maxAchEarlyAccessAmount": "1000.00",
+            "cashBalances": {
+              "buyingPower": "25432.18",
+              "cash": "12500.00",
+              "cashHeldForOrders": "500.00",
+              "unclearedDeposits": "0.00",
+              "unsettledFunds": "200.00"
+            },
+            "type": "margin",
+            "created": "2022-03-15T08:00:00Z",
+            "updated": "2024-06-15T16:30:00Z",
+            "portfolio": "https://api.robinhood.com/portfolios/REC-ACCT-001/"
+          }
+        ],
+        "next": null
+      }
+    }
+  },
+  "portfolio": {
+    "detail": {
+      "url": "/accounts/REC-ACCT-001/portfolio/",
+      "method": "GET",
+      "status": 200,
+      "response": {
+        "url": "https://api.robinhood.com/portfolios/REC-ACCT-001/",
+        "account": "https://api.robinhood.com/accounts/REC-ACCT-001/",
+        "startDate": "2022-03-15",
+        "market_value": "87432.18",
+        "equity": "99932.18",
+        "extendedHoursEquity": "99950.00",
+        "extendedHoursMarketValue": "87450.00",
+        "lastCoreEquity": "98500.00",
+        "lastCoreMarketValue": "86000.00",
+        "excessMaintenance": "50000.00",
+        "excessMaintenanceWithUnclearedDeposits": "49800.00",
+        "excessMargin": "45000.00",
+        "excessMarginWithUnclearedDeposits": "44800.00",
+        "withdrawableAmount": "12000.00",
+        "unclearedDeposits": "0.00",
+        "unsettledFunds": "200.00"
+      }
+    }
+  },
+  "positions": {
+    "list": {
+      "url": "/positions/?nonzero=true",
+      "method": "GET",
+      "status": 200,
+      "response": {
+        "results": [
+          {
+            "url": "https://api.robinhood.com/positions/REC-ACCT-001/INST-AAPL/",
+            "instrument": "https://api.robinhood.com/instruments/INST-AAPL/",
+            "account": "https://api.robinhood.com/accounts/REC-ACCT-001/",
+            "accountNumber": "REC-ACCT-001",
+            "averageBuyPrice": "142.50",
+            "pendingAverageBuyPrice": "142.50",
+            "quantity": "50.0000",
+            "intradayQuantity": "50.0000",
+            "intradayAverageBuyPrice": "142.50",
+            "sharesAvailableForExercise": "0.0000",
+            "sharesHeldForBuys": "0.0000",
+            "sharesHeldForSells": "0.0000",
+            "sharesHeldForStockGrants": "0.0000",
+            "sharesPendingFromOptionsEvents": "0.0000",
+            "updatedAt": "2024-06-15T16:00:00Z",
+            "createdAt": "2023-06-01T10:00:00Z"
+          },
+          {
+            "url": "https://api.robinhood.com/positions/REC-ACCT-001/INST-MSFT/",
+            "instrument": "https://api.robinhood.com/instruments/INST-MSFT/",
+            "account": "https://api.robinhood.com/accounts/REC-ACCT-001/",
+            "accountNumber": "REC-ACCT-001",
+            "averageBuyPrice": "320.00",
+            "pendingAverageBuyPrice": "320.00",
+            "quantity": "25.0000",
+            "intradayQuantity": "25.0000",
+            "intradayAverageBuyPrice": "320.00",
+            "sharesAvailableForExercise": "0.0000",
+            "sharesHeldForBuys": "0.0000",
+            "sharesHeldForSells": "0.0000",
+            "sharesHeldForStockGrants": "0.0000",
+            "sharesPendingFromOptionsEvents": "0.0000",
+            "updatedAt": "2024-06-15T16:00:00Z",
+            "createdAt": "2023-08-15T14:00:00Z"
+          },
+          {
+            "url": "https://api.robinhood.com/positions/REC-ACCT-001/INST-TSLA/",
+            "instrument": "https://api.robinhood.com/instruments/INST-TSLA/",
+            "account": "https://api.robinhood.com/accounts/REC-ACCT-001/",
+            "accountNumber": "REC-ACCT-001",
+            "averageBuyPrice": "195.00",
+            "pendingAverageBuyPrice": "195.00",
+            "quantity": "30.0000",
+            "intradayQuantity": "30.0000",
+            "intradayAverageBuyPrice": "195.00",
+            "sharesAvailableForExercise": "0.0000",
+            "sharesHeldForBuys": "0.0000",
+            "sharesHeldForSells": "0.0000",
+            "sharesHeldForStockGrants": "0.0000",
+            "sharesPendingFromOptionsEvents": "0.0000",
+            "updatedAt": "2024-06-15T16:00:00Z",
+            "createdAt": "2024-01-10T09:30:00Z"
+          }
+        ],
+        "next": null
+      }
+    }
+  },
+  "instruments": {
+    "AAPL": {
+      "url": "https://api.robinhood.com/instruments/INST-AAPL/",
+      "method": "GET",
+      "status": 200,
+      "response": {
+        "id": "INST-AAPL",
+        "url": "https://api.robinhood.com/instruments/INST-AAPL/",
+        "symbol": "AAPL",
+        "name": "Apple Inc.",
+        "simpleName": "Apple",
+        "market": "XNAS",
+        "type": "stock",
+        "tradeable": true,
+        "state": "active",
+        "quote": "https://api.robinhood.com/quotes/AAPL/",
+        "fundamentals": "https://api.robinhood.com/fundamentals/AAPL/",
+        "splits": "https://api.robinhood.com/instruments/INST-AAPL/splits/",
+        "tradability": "tradable",
+        "dayTradeRatio": "0.25",
+        "maintenanceRatio": "0.25",
+        "marginInitialRatio": "0.50",
+        "minTickSize": null,
+        "tradableChainId": null,
+        "rhsTradability": "tradable",
+        "fractionalTradability": "tradable",
+        "defaultCollarFraction": "0.05",
+        "marketCap": "3200000000000"
+      }
+    },
+    "MSFT": {
+      "url": "https://api.robinhood.com/instruments/INST-MSFT/",
+      "method": "GET",
+      "status": 200,
+      "response": {
+        "id": "INST-MSFT",
+        "url": "https://api.robinhood.com/instruments/INST-MSFT/",
+        "symbol": "MSFT",
+        "name": "Microsoft Corporation",
+        "simpleName": "Microsoft",
+        "market": "XNAS",
+        "type": "stock",
+        "tradeable": true,
+        "state": "active",
+        "quote": "https://api.robinhood.com/quotes/MSFT/",
+        "fundamentals": "https://api.robinhood.com/fundamentals/MSFT/",
+        "splits": "https://api.robinhood.com/instruments/INST-MSFT/splits/",
+        "tradability": "tradable",
+        "dayTradeRatio": "0.25",
+        "maintenanceRatio": "0.25",
+        "marginInitialRatio": "0.50",
+        "minTickSize": null,
+        "tradableChainId": null,
+        "rhsTradability": "tradable",
+        "fractionalTradability": "tradable",
+        "defaultCollarFraction": "0.05",
+        "marketCap": "2800000000000"
+      }
+    },
+    "TSLA": {
+      "url": "https://api.robinhood.com/instruments/INST-TSLA/",
+      "method": "GET",
+      "status": 200,
+      "response": {
+        "id": "INST-TSLA",
+        "url": "https://api.robinhood.com/instruments/INST-TSLA/",
+        "symbol": "TSLA",
+        "name": "Tesla, Inc.",
+        "simpleName": "Tesla",
+        "market": "XNAS",
+        "type": "stock",
+        "tradeable": true,
+        "state": "active",
+        "quote": "https://api.robinhood.com/quotes/TSLA/",
+        "fundamentals": "https://api.robinhood.com/fundamentals/TSLA/",
+        "splits": "https://api.robinhood.com/instruments/INST-TSLA/splits/",
+        "tradability": "tradable",
+        "dayTradeRatio": "0.25",
+        "maintenanceRatio": "0.25",
+        "marginInitialRatio": "0.50",
+        "minTickSize": null,
+        "tradableChainId": null,
+        "rhsTradability": "tradable",
+        "fractionalTradability": "tradable",
+        "defaultCollarFraction": "0.05",
+        "marketCap": "800000000000"
+      }
+    }
+  },
+  "quotes": {
+    "AAPL": {
+      "url": "/marketdata/quotes/AAPL/",
+      "method": "GET",
+      "status": 200,
+      "response": {
+        "askPrice": "192.50",
+        "askSize": 300,
+        "bidPrice": "192.25",
+        "bidSize": 450,
+        "lastTradePrice": "192.35",
+        "lastExtendedHoursTradePrice": "192.40",
+        "previousClose": "190.50",
+        "adjustedPreviousClose": "190.50",
+        "previousCloseDate": "2024-06-14",
+        "symbol": "AAPL",
+        "tradingHalted": false,
+        "hasTraded": true,
+        "lastTradePriceSource": "consolidated",
+        "updatedAt": "2024-06-15T20:00:00Z",
+        "instrument": "https://api.robinhood.com/instruments/INST-AAPL/"
+      }
+    },
+    "MSFT": {
+      "url": "/marketdata/quotes/MSFT/",
+      "method": "GET",
+      "status": 200,
+      "response": {
+        "askPrice": "445.00",
+        "askSize": 200,
+        "bidPrice": "444.75",
+        "bidSize": 350,
+        "lastTradePrice": "444.85",
+        "lastExtendedHoursTradePrice": null,
+        "previousClose": "442.00",
+        "adjustedPreviousClose": "442.00",
+        "previousCloseDate": "2024-06-14",
+        "symbol": "MSFT",
+        "tradingHalted": false,
+        "hasTraded": true,
+        "lastTradePriceSource": "consolidated",
+        "updatedAt": "2024-06-15T20:00:00Z",
+        "instrument": "https://api.robinhood.com/instruments/INST-MSFT/"
+      }
+    },
+    "TSLA": {
+      "url": "/marketdata/quotes/TSLA/",
+      "method": "GET",
+      "status": 200,
+      "response": {
+        "askPrice": "182.00",
+        "askSize": 500,
+        "bidPrice": "181.50",
+        "bidSize": 600,
+        "lastTradePrice": "181.75",
+        "lastExtendedHoursTradePrice": "181.80",
+        "previousClose": "178.00",
+        "adjustedPreviousClose": "178.00",
+        "previousCloseDate": "2024-06-14",
+        "symbol": "TSLA",
+        "tradingHalted": false,
+        "hasTraded": true,
+        "lastTradePriceSource": "consolidated",
+        "updatedAt": "2024-06-15T20:00:00Z",
+        "instrument": "https://api.robinhood.com/instruments/INST-TSLA/"
+      }
+    }
+  },
+  "orders": {
+    "list": {
+      "url": "/orders/",
+      "method": "GET",
+      "status": 200,
+      "response": {
+        "results": [
+          {
+            "id": "REC-ORD-001",
+            "ref_id": null,
+            "url": "https://api.robinhood.com/orders/REC-ORD-001/",
+            "account": "https://api.robinhood.com/accounts/REC-ACCT-001/",
+            "position": "https://api.robinhood.com/positions/REC-ACCT-001/INST-AAPL/",
+            "cancel": null,
+            "instrument": "https://api.robinhood.com/instruments/INST-AAPL/",
+            "cumulativeQuantity": "50.0000",
+            "averagePrice": "142.50",
+            "fees": "0.00",
+            "state": "filled",
+            "type": "market",
+            "side": "buy",
+            "timeInForce": "gfd",
+            "trigger": "immediate",
+            "price": null,
+            "stopPrice": null,
+            "quantity": "50.0000",
+            "rejectReason": null,
+            "created": "2023-06-01T10:00:00Z",
+            "updated": "2023-06-01T10:01:00Z",
+            "lastTransactionAt": "2023-06-01T10:01:00Z",
+            "executions": [],
+            "extendedHours": false,
+            "overrideDayTradeChecks": false,
+            "overrideDtbpChecks": false,
+            "responseCategory": null,
+            "stopTriggeredAt": null,
+            "lastTrailPrice": null,
+            "lastTrailPriceUpdatedAt": null,
+            "dollarBasedAmount": null,
+            "totalNotional": null,
+            "executedNotional": null
+          }
+        ],
+        "next": null
+      }
+    }
+  },
+  "rateLimited": {
+    "url": "/accounts/",
+    "method": "GET",
+    "status": 429,
+    "response": {
+      "detail": "Request was throttled. Expected available in 30 seconds."
+    }
+  },
+  "partialPositions": {
+    "list": {
+      "url": "/positions/?nonzero=true",
+      "method": "GET",
+      "status": 200,
+      "response": {
+        "results": [
+          {
+            "url": "https://api.robinhood.com/positions/REC-ACCT-001/INST-AAPL/",
+            "instrument": "https://api.robinhood.com/instruments/INST-AAPL/",
+            "account": "https://api.robinhood.com/accounts/REC-ACCT-001/",
+            "accountNumber": "REC-ACCT-001",
+            "averageBuyPrice": "142.50",
+            "pendingAverageBuyPrice": "142.50",
+            "quantity": "50.0000",
+            "intradayQuantity": "50.0000",
+            "intradayAverageBuyPrice": "142.50",
+            "sharesAvailableForExercise": "0.0000",
+            "sharesHeldForBuys": "0.0000",
+            "sharesHeldForSells": "0.0000",
+            "sharesHeldForStockGrants": "0.0000",
+            "sharesPendingFromOptionsEvents": "0.0000",
+            "updatedAt": "2024-06-15T16:00:00Z",
+            "createdAt": "2023-06-01T10:00:00Z"
+          },
+          {
+            "url": "https://api.robinhood.com/positions/REC-ACCT-001/INST-DELIST/",
+            "instrument": "https://api.robinhood.com/instruments/INST-DELIST/",
+            "account": "https://api.robinhood.com/accounts/REC-ACCT-001/",
+            "accountNumber": "REC-ACCT-001",
+            "averageBuyPrice": "50.00",
+            "pendingAverageBuyPrice": "50.00",
+            "quantity": "100.0000",
+            "intradayQuantity": "100.0000",
+            "intradayAverageBuyPrice": "50.00",
+            "sharesAvailableForExercise": "0.0000",
+            "sharesHeldForBuys": "0.0000",
+            "sharesHeldForSells": "0.0000",
+            "sharesHeldForStockGrants": "0.0000",
+            "sharesPendingFromOptionsEvents": "0.0000",
+            "updatedAt": "2024-06-15T16:00:00Z",
+            "createdAt": "2023-01-01T10:00:00Z"
+          }
+        ],
+        "next": null
+      }
+    }
+  }
+}
